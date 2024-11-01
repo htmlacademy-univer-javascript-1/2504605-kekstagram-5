@@ -1,0 +1,4 @@
+import './allPhoto.js';
+
+
+///
