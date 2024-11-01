@@ -1,1 +1,2 @@
+
 import './allPhoto.js';
