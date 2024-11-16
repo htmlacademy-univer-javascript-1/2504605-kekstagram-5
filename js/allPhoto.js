@@ -2,17 +2,19 @@ import { makeAllPictures } from './drawMiniatures.js';
 import { getPosts } from './post.js';
 import { openBigPost } from './drawAllPhoto.js';
 
-const posts = getPosts();
-makeAllPictures(posts);
+const allPosts = getPosts();
+makeAllPictures(allPosts);
 
-
-const handlePhotoClick = (event) => {
-  const pictureElement = event.target.closest('.picture');
-  if (pictureElement) {
-    const pictureSrc = pictureElement.querySelector('.picture__img').src;
-    const selectedPicture = posts.find((photo) => photo.url === pictureSrc);
-    openBigPost(selectedPicture);
+const photoOnClick = (evt) => {
+  const currentElement = evt.target.closest('.picture');
+  if (currentElement) {
+    const imgSrc = currentElement.querySelector('.picture__img').getAttribute('src');
+    const currentPicture = allPosts.find((photo) => photo.url === imgSrc);
+    if (currentPicture) {
+      openBigPost(currentPicture);
+    }
   }
 };
 
-document.querySelector('.pictures').addEventListener('click', handlePhotoClick);
+document.querySelector('.pictures').addEventListener('click', photoOnClick);
+
