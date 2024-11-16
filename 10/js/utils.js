@@ -1,31 +1,35 @@
-
+/* eslint-disable curly */
 const getRandomInt = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
   return Math.floor(Math.random() * (upper - lower + 1) + lower);
 };
 
-const randomIdInRange = (min, max) => {
+const randomIdInRange = (bottom, top) => {
   const usedIDs = [];
 
   return function() {
-    if (usedIDs.length >= (max - min + 1)) {
+    if (usedIDs.length >= (top - bottom + 1)) {
       return null;
     }
 
-    let currentId;
+    let currentInt;
     do {
-      currentId = getRandomInt(min, max);
-    } while (usedIDs.includes(currentId));
+      currentInt = getRandomInt(bottom, top);
+    } while (usedIDs.includes(currentInt));
 
-    usedIDs.push(currentId);
-    return currentId;
+    usedIDs.push(currentInt);
+    return currentInt;
   };
 };
 
-const isEscape = (event) => event.key === 'Escape';
+const isEscape = (evt) => evt.key === 'Escape';
 
-const randomValueFromArray = (array) => array[getRandomInt(0, array.length - 1)];
+const randomValueFromArray = (currentArray) => {
+  if (currentArray.length === 0)
+    return null;
+  return currentArray[getRandomInt(0, currentArray.length - 1)];
+};
 
 export {
   getRandomInt,
