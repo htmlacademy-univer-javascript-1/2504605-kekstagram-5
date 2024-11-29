@@ -1,80 +1,90 @@
 import {isEscape} from './utils.js';
-const maxHashtags = 5;
-const hashtag = /^#[a-zа-яё0-9]{1,19}$/i;
+import { addEventListenerToScaleElemets, removeEventListenerFromScaleElemets, addFilter, removeFilter } from './effects.js';
+
+const MAX_TAG_COUNT = 5;
+const HASHTAG_PATTERN = /^#[a-zа-яё0-9]{1,19}$/i;
 
 const ErrorMessages = {
-  countExceeded: `Максимум ${maxHashtags} хэштегов`,
-  notUnique: 'Хэштеги должны быть уникальными',
-  invalidFormat: 'Некорректный хэштег'
+  EXCEEDED_COUNT: `Максимум ${MAX_TAG_COUNT} хэштегов`,
+  UNIQUE_REQUIRED: 'Хэштеги должны быть уникальными',
+  INVALID_HASHTAG: 'Некорректный хэштег'
 };
 
 const documentBody = document.querySelector('body');
-const imageUploadForm = document.querySelector('.img-upload__form');
-const uploadModal = imageUploadForm.querySelector('.img-upload__overlay');
-const hashtagsInputField = imageUploadForm.querySelector('.text__hashtags');
+const uploadForm = document.querySelector('.img-upload__form');
+const overlayElement = uploadForm.querySelector('.img-upload__overlay');
+const hashtagsField = uploadForm.querySelector('.text__hashtags');
+const imageScaleValue = uploadForm.querySelector('.scale__control--value');
 
-const pristineValidator = new Pristine(imageUploadForm, {
+const pristineValidator = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
 });
 
 const displayForm = () => {
-  uploadModal.classList.remove('hidden');
+  overlayElement.classList.remove('hidden');
   documentBody.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeydown);
+  document.addEventListener('keydown', handleDocumentKeydown);
+
+  addEventListenerToScaleElemets();
+  addFilter();
 };
 
 const hideForm = () => {
-  imageUploadForm.reset();
+  uploadForm.reset();
   pristineValidator.reset();
-  uploadModal.classList.add('hidden');
+  overlayElement.classList.add('hidden');
   documentBody.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
+  document.removeEventListener('keydown', handleDocumentKeydown);
+  removeEventListenerFromScaleElemets();
+  removeFilter();
+
+  imageScaleValue.value = '100%';
 };
 
-const parseTags = (inputString) => inputString.trim().split(' ').filter((currentTag) => Boolean(currentTag.length));
-const isFocusedOnInput = () => document.activeElement === hashtagsInputField || document.activeElement === imageUploadForm.querySelector('.text__description');
-const validateTagCount = (inputValue) => parseTags(inputValue).length <= maxHashtags;
-const validateHashtagsFormat = (inputValue) => parseTags(inputValue).every((tag) => hashtag.test(tag));
+const extractTags = (inputString) => inputString.trim().split(' ').filter((tag) => Boolean(tag.length));
+const isFocused = () => document.activeElement === hashtagsField || document.activeElement === uploadForm.querySelector('.text__description');
+const validateCount = (inputValue) => extractTags(inputValue).length <= MAX_TAG_COUNT;
+const validateHashtags = (inputValue) => extractTags(inputValue).every((tag) => HASHTAG_PATTERN.test(tag));
 
-const validateUniqueTags = (inputValue) => {
-  const lowercaseTags = parseTags(inputValue).map((currentTag) => currentTag.toLowerCase());
-  return lowercaseTags.length === new Set(lowercaseTags).size;
+const validateUniqueness = (inputValue) => {
+  const transformedTags = extractTags(inputValue).map((tag) => tag.toLowerCase());
+  return transformedTags.length === new Set(transformedTags).size;
 };
 
-function onDocumentKeydown(evt) {
-  if (isEscape && !isFocusedOnInput()) {
-    evt.preventDefault();
+function handleDocumentKeydown(event) {
+  if (isEscape(event) && !isFocused()) {
+    event.preventDefault();
     hideForm();
   }
 }
 
-const handleCancelClick = () => hideForm();
+const handleCancelButtonClick = () => hideForm();
 const handleInputChange = () => displayForm();
 
 pristineValidator.addValidator(
-  hashtagsInputField,
-  validateUniqueTags,
-  ErrorMessages.notUnique,
+  hashtagsField,
+  validateUniqueness,
+  ErrorMessages.UNIQUE_REQUIRED,
   1,
   true
 );
 
 pristineValidator.addValidator(
-  hashtagsInputField,
-  validateHashtagsFormat,
-  ErrorMessages.invalidFormat,
+  hashtagsField,
+  validateHashtags,
+  ErrorMessages.INVALID_HASHTAG,
   2,
   true
 );
 
 pristineValidator.addValidator(
-  hashtagsInputField,
-  validateTagCount,
-  ErrorMessages.countExceeded,
+  hashtagsField,
+  validateCount,
+  ErrorMessages.EXCEEDED_COUNT,
   3,
   true
 );
 
-imageUploadForm.querySelector('.img-upload__input').addEventListener('change', handleInputChange);
-imageUploadForm.querySelector('.img-upload__cancel').addEventListener('click', handleCancelClick);
+uploadForm.querySelector('.img-upload__input').addEventListener('change', handleInputChange);
+uploadForm.querySelector('.img-upload__cancel').addEventListener('click', handleCancelButtonClick);
