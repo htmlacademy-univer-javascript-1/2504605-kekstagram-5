@@ -1,79 +1,84 @@
 import { isEscape } from './utils.js';
 
+const COMMENT_STEP = 5;
 const bigPictureElement = document.querySelector('.big-picture');
 const closeButton = bigPictureElement.querySelector('.big-picture__cancel');
-const imageElement = bigPictureElement.querySelector('.big-picture__img img');
-const likesCountElement = bigPictureElement.querySelector('.likes-count');
+const imageElement = bigPictureElement.querySelector('.big-picture__img').querySelector('img');
+const bigPictureLikesNumber = bigPictureElement.querySelector('.likes-count');
 const descriptionElement = bigPictureElement.querySelector('.social__caption');
 const commentsContainer = bigPictureElement.querySelector('.social__comments');
 const commentTemplate = commentsContainer.querySelector('.social__comment');
 const commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
 const commentsCounter = bigPictureElement.querySelector('.social__comment-count');
 
-let currentPhotoData;
-let commentIndex = 0;
+let currentPhoto;
+let currentCommentIndex = 0;
 
-const clearComments = () => {
+const makeEmptyComments = () => {
   commentsContainer.innerHTML = '';
 };
 
-const createCommentElement = (commentData) => {
-  const commentElement = commentTemplate.cloneNode(true);
-  const avatarElement = commentElement.querySelector('.social__picture');
-  avatarElement.src = commentData.avatar;
-  avatarElement.alt = commentData.name;
-  commentElement.querySelector('.social__text').textContent = commentData.message;
-  return commentElement;
+const remakeComment = (comment) => {
+  const remadeComment = commentTemplate.cloneNode(true);
+  const userAvatar = remadeComment.querySelector('.social__picture');
+  userAvatar.src = comment.avatar;
+  userAvatar.alt = comment.name;
+  remadeComment.querySelector('.social__text').textContent = comment.message;
+  return remadeComment;
 };
 
-const displayComments = () => {
-  let commentsLoaded = 0;
-  for (let i = commentIndex; i < commentIndex + 5; i++) {
-    if (i >= currentPhotoData.comments.length) {
+const renderComments = () => {
+  let currentIndex = 0;
+  for (let i = currentCommentIndex; i < currentCommentIndex + COMMENT_STEP; i++) {
+    if (i === currentPhoto.comments.length) {
       commentsLoaderButton.classList.add('hidden');
+      currentIndex = i - 1;
       break;
     }
-    commentsLoaded = i;
-    commentsContainer.appendChild(createCommentElement(currentPhotoData.comments[i]));
+    currentIndex = i;
+    commentsContainer.appendChild(remakeComment(currentPhoto.comments[i]));
   }
-  commentIndex = commentsLoaded + 1;
-  commentsCounter.innerHTML = `${commentIndex} из <span class="comments-count">${currentPhotoData.comments.length}</span> комментариев`;
+  currentCommentIndex = currentIndex + 1;
+  commentsCounter.innerHTML = `${currentCommentIndex} из <span class="comments-count">${currentPhoto.comments.length}</span> комментариев`;
 };
 
-const updatePhotoDisplay = () => {
-  imageElement.src = currentPhotoData.url;
-  likesCountElement.textContent = currentPhotoData.likes;
-  descriptionElement.textContent = currentPhotoData.description;
+const remakePhoto = () => {
+  imageElement.src = currentPhoto.url;
+  bigPictureLikesNumber.textContent = currentPhoto.likes;
+  descriptionElement.textContent = currentPhoto.description;
 
-  clearComments();
-  displayComments();
+  makeEmptyComments();
+  renderComments(currentPhoto);
 };
 
-const handleKeydown = (evt) => {
+const listenKeydown = (evt) => {
   if (isEscape(evt)) {
     evt.preventDefault();
-    // eslint-disable-next-line no-use-before-define
     closeBigPost();
   }
 };
 
-const openBigPost = (post) => {
+const onClosePostClick = () => closeBigPost();
+const onCommentsLoaderButtonClick = () => renderComments();
+
+const openBigPost = (currentPost) => {
   bigPictureElement.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', handleKeydown);
-  currentPhotoData = post;
-  updatePhotoDisplay();
+  document.addEventListener('keydown', listenKeydown);
+  closeButton.addEventListener('click', onClosePostClick);
+  commentsLoaderButton.addEventListener('click', onCommentsLoaderButtonClick);
+  currentPhoto = currentPost;
+  remakePhoto();
 };
 
-const closeBigPost = () => {
+function closeBigPost() {
   bigPictureElement.classList.add('hidden');
   document.body.classList.remove('modal-open');
   commentsLoaderButton.classList.remove('hidden');
-  document.removeEventListener('keydown', handleKeydown);
-  commentIndex = 0;
-};
+  document.removeEventListener('keydown', listenKeydown);
+  closeButton.removeEventListener('click', onClosePostClick);
+  commentsLoaderButton.removeEventListener('click', onCommentsLoaderButtonClick);
+  currentCommentIndex = 0;
+}
 
-closeButton.addEventListener('click', closeBigPost);
-commentsLoaderButton.addEventListener('click', displayComments);
-
-export { openBigPost };
+export {openBigPost};
