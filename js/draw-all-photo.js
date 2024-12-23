@@ -51,7 +51,7 @@ const remakePhoto = () => {
   renderComments();
 };
 
-const listenKeydown = (evt) => {
+const onKeydown = (evt) => {
   if (isEscape(evt)) {
     evt.preventDefault();
     closeBigPost();
@@ -64,7 +64,7 @@ const onCommentsLoaderButtonClick = () => renderComments();
 const openBigPost = (currentPost) => {
   bigPictureElement.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', listenKeydown);
+  document.addEventListener('keydown', onKeydown);
   closeButton.addEventListener('click', onClosePostClick);
   commentsLoaderButton.addEventListener('click', onCommentsLoaderButtonClick);
   currentPhoto = currentPost;
@@ -75,7 +75,7 @@ function closeBigPost() {
   bigPictureElement.classList.add('hidden');
   document.body.classList.remove('modal-open');
   commentsLoaderButton.classList.remove('hidden');
-  document.removeEventListener('keydown', listenKeydown);
+  document.removeEventListener('keydown', onKeydown);
   closeButton.removeEventListener('click', onClosePostClick);
   commentsLoaderButton.removeEventListener('click', onCommentsLoaderButtonClick);
   currentCommentIndex = 0;

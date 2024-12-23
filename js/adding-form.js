@@ -5,9 +5,9 @@ import { sendData } from './api.js';
 const DEFAULT_PICTURE = 'img/upload-default-image.jpg';
 const TYPES_OF_FILES = ['jpg', 'jpeg', 'png'];
 const MAX_TAG_COUNT = 140;
-const HASHTAG_PATTERN = 5;
-const hashtagPattern = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
-const errorMessageClass = 'upload-form__error-text';
+const MAX_HASHTAG_COUNT = 5;
+const HASHTAG_PATTERN = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
+const ERROR_MESSAGE_CLASS = 'upload-form__error-text';
 let hashtagErrorMessage = '';
 
 const imageUploadForm = document.querySelector('.img-upload__form');
@@ -28,7 +28,7 @@ const pristine = new Pristine(imageUploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
-  errorTextClass: errorMessageClass
+  errorTextClass: ERROR_MESSAGE_CLASS
 }, true);
 
 const makeHashtagValidation = (currentHashtag) => {
@@ -41,12 +41,12 @@ const makeHashtagValidation = (currentHashtag) => {
   }
 
   for (const hashtag of allHashtags) {
-    if (!hashtagPattern.test(hashtag)) {
+    if (!HASHTAG_PATTERN.test(hashtag)) {
       hashtagErrorMessage = 'Введён некорректный хэштег';
       return false;
     }
-    if (allHashtags.length > HASHTAG_PATTERN) {
-      hashtagErrorMessage = `Превышено максимально допустимое количество хэштегов: ${HASHTAG_PATTERN}`;
+    if (allHashtags.length > MAX_HASHTAG_COUNT) {
+      hashtagErrorMessage = `Превышено максимально допустимое количество хэштегов: ${MAX_HASHTAG_COUNT}`;
       return false;
     }
     if (checkForRepeatsInHashtags(allHashtags)) {
@@ -66,7 +66,6 @@ const onInputInForm = () => {
 };
 
 const makeDescrValidation = (value) => value.length <= MAX_TAG_COUNT;
-
 const getMessageIfErrorInHashtag = () => hashtagErrorMessage;
 
 pristine.addValidator(hashtagsInputField, makeHashtagValidation, getMessageIfErrorInHashtag);
@@ -137,7 +136,7 @@ const unlockSubmitButton = () => {
   submitUploadButton.textContent = 'Опубликовать';
 };
 
-const closingFormClickHandler = (className, currentFunction) => (evt) => {
+const closeFormClickHandler = (className, currentFunction) => (evt) => {
   if (evt.target.closest(`.${className}`) === null) {
     currentFunction();
   }
@@ -150,8 +149,8 @@ const getKeydownHandler = (currentFunction) => (evt) => {
   }
 };
 
-const onOutsideIfSuccessFormClick = closingFormClickHandler('success__inner', closeSuccessAlert);
-const onOutsideIfErrorFormClick = closingFormClickHandler('error__inner', closeErrorAlert);
+const onOutsideIfSuccessFormClick = closeFormClickHandler('success__inner', closeSuccessAlert);
+const onOutsideIfErrorFormClick = closeFormClickHandler('error__inner', closeErrorAlert);
 const onErrorCloseButtonClick = () => closeErrorAlert();
 const onSuccessCloseButtonClick = () => closeSuccessAlert();
 const onSuccessFormKeydown = getKeydownHandler(closeSuccessAlert);
