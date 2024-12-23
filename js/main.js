@@ -1,3 +1,3 @@
-import './allPhoto.js';
+import './all-photo.js';
 
-import './addingForm.js';
+import './adding-form.js';

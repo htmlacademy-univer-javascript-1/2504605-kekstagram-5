@@ -1,9 +1,9 @@
-import { openBigPost } from './drawAllPhoto.js';
+import { openBigPost } from './draw-all-photo.js';
 
 const pictureElements = document.querySelector('.pictures');
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const getPictureClickWorker = (pictures) => (evt) => {
+const onPictureClick = (pictures) => (evt) => {
   const pictureElement = evt.target.closest('.picture');
   if (pictureElement) {
     const currentPicture = pictures.find((photo) => photo.url === pictureElement.querySelector('.picture__img').getAttribute('src'));
@@ -25,7 +25,7 @@ const makeAllPictures = (allPictures) => {
   });
 
   pictureElements.appendChild(fragmentPictures);
-  pictureElements.addEventListener('click', getPictureClickWorker(allPictures));
+  pictureElements.addEventListener('click', onPictureClick(allPictures));
 };
 
 export {makeAllPictures};
