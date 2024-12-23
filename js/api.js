@@ -15,7 +15,7 @@ const Method = {
   POST: 'POST',
 };
 
-const loadingData = (currentRoute, errorText, method = Method.GET, body = null) =>
+const loadData = (currentRoute, errorText, method = Method.GET, body = null) =>
   fetch(`${MAIN_URL}${currentRoute}`, {method, body})
     .then((response) => {
       if (!response.ok) {
@@ -27,6 +27,6 @@ const loadingData = (currentRoute, errorText, method = Method.GET, body = null) 
       throw new Error(errorText);
     });
 
-const fetchData = () => loadingData(Route.GET_DATA, ErrorMessage.GET_DATA);
-const postData = (body) => loadingData(Route.SEND_DATA, ErrorMessage.SEND_DATA, Method.POST, body);
+const fetchData = () => loadData(Route.GET_DATA, ErrorMessage.GET_DATA);
+const postData = (body) => loadData(Route.SEND_DATA, ErrorMessage.SEND_DATA, Method.POST, body);
 export { fetchData as getData, postData as sendData };

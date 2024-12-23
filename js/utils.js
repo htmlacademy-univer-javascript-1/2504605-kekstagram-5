@@ -1,4 +1,4 @@
-const ALERT_DISPLAY_DURATION_MS = 5000;
+const ALERT_TIMEOUT_MS = 5000;
 
 const isEscape = (evt) => evt.key === 'Escape';
 
@@ -31,7 +31,7 @@ const debounce = (callback, timeoutDelay = 500) => {
   };
 };
 
-const showingAlert = (message) => {
+const showAlert = (message) => {
   const alertMessage = document.createElement('div');
   alertMessage.style.zIndex = '100';
   alertMessage.style.position = 'absolute';
@@ -46,7 +46,7 @@ const showingAlert = (message) => {
   document.body.append(alertMessage);
   setTimeout(() => {
     alertMessage.remove();
-  }, ALERT_DISPLAY_DURATION_MS);
+  }, ALERT_TIMEOUT_MS);
 };
 
 const checkForRepeatsInHashtags = (arr) => {
@@ -63,7 +63,7 @@ const checkForRepeatsInHashtags = (arr) => {
 export {
   isEscape,
   checkForRepeatsInHashtags,
-  showingAlert,
+  showAlert,
   getRandomIntValue,
   getArrayRandomPrototype,
   debounce

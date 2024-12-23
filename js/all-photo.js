@@ -1,6 +1,6 @@
-import { makeAllPictures } from './drawMiniatures.js';
+import { makeAllPictures } from './draw-miniatures.js';
 import {getData} from './api.js';
-import { showingAlert, getArrayRandomPrototype, debounce } from './utils.js';
+import { showAlert, getArrayRandomPrototype, debounce } from './utils.js';
 
 const TIMEOUT_DURATION_MS = 500;
 const RANDOM_PICTURES_COUNT = 10;
@@ -51,4 +51,4 @@ getData()
     const onClickFilterButton = getFilterButtonsClickWorker(debounce(() => remakeRenderingPictures(allPictures), TIMEOUT_DURATION_MS));
     filterButtonsList.forEach((currentElement) => currentElement.addEventListener('click', onClickFilterButton));
   })
-  .catch((error) => showingAlert(error.message));
+  .catch((error) => showAlert(error.message));

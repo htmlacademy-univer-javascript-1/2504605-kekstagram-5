@@ -14,7 +14,7 @@ const currentEffect = effectSliderContainer.querySelector('.effect-level__value'
 
 let filterType = 'none';
 
-const zoomOutImage = () => {
+const handleZoomOut = () => {
   let currentScaleValue = parseInt(scaleValueControl.value, 10);
   if (currentScaleValue > MIN_ZOOM_LEVEL) {
     currentScaleValue -= ZOOM_INCREMENT;
@@ -23,7 +23,7 @@ const zoomOutImage = () => {
   }
 };
 
-const zoomInImage = () => {
+const handleZoomIn = () => {
   let currentScaleValue = parseInt(scaleValueControl.value, 10);
   if (currentScaleValue < MAX_ZOOM_LEVEL) {
     currentScaleValue += ZOOM_INCREMENT;
@@ -33,13 +33,13 @@ const zoomInImage = () => {
 };
 
 const addEventListenerToScaleElemets = () => {
-  buttonZoomOut.addEventListener('click', zoomOutImage);
-  buttonZoomIn.addEventListener('click', zoomInImage);
+  buttonZoomOut.addEventListener('click', handleZoomOut);
+  buttonZoomIn.addEventListener('click', handleZoomIn);
 };
 
 const removeEventListenerFromScaleElemets = () => {
-  buttonZoomOut.removeEventListener('click', zoomOutImage);
-  buttonZoomIn.removeEventListener('click', zoomInImage);
+  buttonZoomOut.removeEventListener('click', handleZoomOut);
+  buttonZoomIn.removeEventListener('click', handleZoomIn);
 };
 
 const getEffectParameters = (min, max, step, funcTo, funcFrom) => ({
