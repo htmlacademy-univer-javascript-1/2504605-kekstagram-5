@@ -31,7 +31,7 @@ const debounce = (callback, timeoutDelay = 500) => {
   };
 };
 
-const showingAlert = (message) => {
+const showAlert = (message) => {
   const alertMessage = document.createElement('div');
   alertMessage.style.zIndex = '100';
   alertMessage.style.position = 'absolute';
@@ -63,7 +63,7 @@ const checkForRepeatsInHashtags = (arr) => {
 export {
   isEscape,
   checkForRepeatsInHashtags,
-  showingAlert,
+  showAlert,
   getRandomIntValue,
   getArrayRandomPrototype,
   debounce
